@@ -157,13 +157,6 @@ export const BroadcastLeaderboard = () => {
 
   const biggestChangePlayerId = [...PLAYERS].reduce((prev, curr) => (curr.change > prev.change ? curr : prev)).id;
 
-  const groupedPlayers = {
-    Elite: players.filter(p => p.tier === 'Elite'),
-    Pro: players.filter(p => p.tier === 'Pro'),
-    Challenger: players.filter(p => p.tier === 'Challenger'),
-    Rookie: players.filter(p => p.tier === 'Rookie'),
-  };
-
   return (
     <section className="min-h-screen relative bg-[#050505] text-white pt-24 font-barlow pb-20">
       <div className="absolute inset-x-0 top-0 h-96 bg-gradient-to-b from-[#1A1A1A]/80 to-transparent pointer-events-none"></div>
@@ -178,39 +171,53 @@ export const BroadcastLeaderboard = () => {
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 mt-8 items-start relative min-h-[80vh]">
           {/* Left Column: Rankings List */}
           <div className="w-full lg:w-[65%] shrink-0 pb-32" ref={listRef}>
-            {(Object.keys(groupedPlayers) as Array<keyof typeof groupedPlayers>).map((tier) => (
-              groupedPlayers[tier].length > 0 && (
-                <div key={tier} className="mb-12">
-                  <div className="sticky top-20 lg:top-24 z-30 bg-[#050505]/90 backdrop-blur-xl py-4 border-b-4 border-brand-cyan mb-6 shadow-[0_4px_30px_rgba(0,0,0,0.8)]">
-                    <h2 className="text-3xl md:text-4xl font-black italic tracking-tighter text-white uppercase ml-2 select-none">
-                      {tier}
-                    </h2>
-                  </div>
-                  <div className="flex flex-col gap-3 relative z-10">
-                    <AnimatePresence mode="popLayout">
-                      {groupedPlayers[tier].map((player, index) => (
-                        <motion.div
-                          key={player.id}
-                          layout
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.9 }}
-                          transition={{ duration: 0.4, type: "spring", bounce: 0.2 }}
-                          ref={(el) => { if(el) rowRefs.current[player.id] = el; }} // Ensure HTMLDivElement is cast correctly, motion wrapper might forward it. 
-                        >
-                          <BroadcastRow 
-                            player={player} 
-                            isActive={activePlayerId === player.id}
-                            onClick={() => handleRowClick(player.id)}
-                            isBiggestMover={player.id === biggestChangePlayerId}
-                          />
-                        </motion.div>
-                      ))}
-                    </AnimatePresence>
-                  </div>
-                </div>
-              )
-            ))}
+            <div className="flex flex-col gap-3 relative z-10">
+              <AnimatePresence mode="popLayout">
+                {players.flatMap((player, index) => {
+                  const showTierHeader = sortField === 'points' && (!selectedDivision) && (index === 0 || players[index - 1].tier !== player.tier);
+                  const items = [];
+                  
+                  if (showTierHeader) {
+                    items.push(
+                      <motion.div
+                        layout
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ duration: 0.4 }}
+                        key={`header-${player.tier}`}
+                        className="sticky top-20 lg:top-24 z-30 bg-[#050505]/90 backdrop-blur-xl py-4 border-b-2 border-brand-cyan mb-2 mt-6 shadow-[0_4px_15px_rgba(0,255,133,0.15)] first:mt-0 transition-colors duration-500"
+                      >
+                        <h2 className="text-3xl md:text-4xl font-black italic tracking-tighter text-white uppercase ml-2 select-none">
+                          {player.tier}
+                        </h2>
+                      </motion.div>
+                    );
+                  }
+                  
+                  items.push(
+                    <motion.div
+                      key={`row-${player.id}`}
+                      layout
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ duration: 0.4, type: "spring", bounce: 0.2 }}
+                      ref={(el) => { if(el) rowRefs.current[player.id] = el; }}
+                    >
+                      <BroadcastRow 
+                        player={player} 
+                        isActive={activePlayerId === player.id}
+                        onClick={() => handleRowClick(player.id)}
+                        isBiggestMover={player.id === biggestChangePlayerId}
+                      />
+                    </motion.div>
+                  );
+                  
+                  return items;
+                })}
+              </AnimatePresence>
+            </div>
           </div>
 
           {/* Right Column: Sticky Detail (Desktop) */}

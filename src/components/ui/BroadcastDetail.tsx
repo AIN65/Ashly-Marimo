@@ -1,6 +1,6 @@
 import React from 'react';
 import { Player } from '../../data/players';
-import { Flame, Target, Trophy, Swords } from 'lucide-react';
+import { Flame, Target, Trophy, Swords, BrainCircuit } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface BroadcastDetailProps {
@@ -11,6 +11,15 @@ export const BroadcastDetail: React.FC<BroadcastDetailProps> = ({ player }) => {
   if (!player) return null;
 
   const jerseyNumber = (player.name.length * 7 + player.rank * 3) % 99 + 1;
+
+  const getAIAnalysis = (p: Player) => {
+    if (p.streak >= 3) return `${p.name} is on fire with a ${p.streak}-game win streak. Opponents are struggling to break through their defensive structure and counter-attacks.`;
+    if (p.streak <= -2) return `${p.name} has hit a rough patch recently. Needs to re-evaluate their mid-field transition to turn things around and regain form.`;
+    if (parseFloat(p.winRate) > 80) return `Absolute dominance. ${p.name} maintains an elite ${p.winRate} win rate, executing high-percentage plays consistently in the final third.`;
+    if (p.gd > 20) return `Offensive powerhouse. A +${p.gd} goal difference highlights ${p.name}'s lethal finishing inside the box and aggressive high-press.`;
+    if (parseFloat(p.winRate) < 50) return `Looking for form. ${p.name} needs to tighten up defensively to improve their ${p.winRate} win rate and climb the ranks.`;
+    return `Steady performances from ${p.name}. Currently focusing on consistent point accumulation in the ${p.tier} division to push for promotion.`;
+  };
 
   return (
     <div className="w-full h-full relative overflow-hidden rounded-2xl bg-[#0A0A0A] border border-white/5 shadow-2xl flex flex-col">
@@ -39,12 +48,19 @@ export const BroadcastDetail: React.FC<BroadcastDetailProps> = ({ player }) => {
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/3 w-64 h-80 rounded-t-full bg-gradient-to-b from-white/5 to-transparent blur-3xl opacity-50"></div>
           </div>
 
-          <div className="relative z-10 flex flex-col h-full p-8 pt-12">
+          <div className="relative z-10 flex flex-col h-full overflow-y-auto scrollbar-hide p-6 lg:p-8 pt-6 pb-12">
             
             {/* Top Info */}
-            <div className="flex flex-col items-center text-center space-y-4 flex-1 mt-8">
-              <div className="w-24 h-24 rounded-full border border-white/10 flex items-center justify-center font-barlow-condensed font-black italic text-4xl bg-gradient-to-b from-white/10 to-transparent shadow-[0_0_30px_rgba(0,255,133,0.1)] text-white">
-                {jerseyNumber}
+            <div className="flex flex-col items-center text-center space-y-4 shrink-0 mb-8 mt-4">
+              <div className="w-24 h-24 border border-white/10 flex flex-col items-center justify-center mb-2 relative bg-brand-cyan text-brand-cyan font-black font-display tracking-tight z-10 shadow-[0_0_30px_rgba(0,255,133,0.1)] transition-all overflow-hidden" 
+                   style={{ borderRadius: '0.5rem 0.5rem 1rem 1rem', borderBottom: '2px solid rgba(255, 255, 255, 0.2)' }}>
+                <div className="absolute inset-0 bg-[#0A0D14] m-[2px]" style={{ borderRadius: '0.4rem 0.4rem 0.9rem 0.9rem' }}></div>
+                <span className="bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-400 z-10 font-barlow-condensed italic text-5xl">
+                  {jerseyNumber}
+                </span>
+                <span className="text-[10px] font-bold text-brand-cyan mt-1 uppercase tracking-widest z-10">
+                  {player.team.split(' ').map(w => w[0]).join('').substring(0,3).toUpperCase()}
+                </span>
               </div>
               <div className="w-full @container">
                 <h2 className="font-barlow font-black italic text-[clamp(2.5rem,10cqi,4rem)] leading-none tracking-tighter uppercase text-white drop-shadow-md break-all">
@@ -57,7 +73,7 @@ export const BroadcastDetail: React.FC<BroadcastDetailProps> = ({ player }) => {
             </div>
 
             {/* Division Banner */}
-            <div className="w-full bg-white/5 border border-white/10 rounded-xl p-4 flex items-center justify-between backdrop-blur-sm mb-6">
+            <div className="w-full shrink-0 bg-white/5 border border-white/10 rounded-xl p-4 flex items-center justify-between backdrop-blur-sm mb-6">
               <div className="flex items-center gap-3">
                 <Trophy className="w-6 h-6 text-yellow-500" />
                 <div className="flex flex-col">
@@ -72,7 +88,7 @@ export const BroadcastDetail: React.FC<BroadcastDetailProps> = ({ player }) => {
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 shrink-0">
               <div className="bg-[#111] border border-white/5 rounded-xl p-4 flex flex-col justify-between h-24 relative overflow-hidden group">
                 <div className="absolute top-0 left-0 w-1 h-full bg-brand-cyan"></div>
                 <div className="flex items-center justify-between">
@@ -112,7 +128,7 @@ export const BroadcastDetail: React.FC<BroadcastDetailProps> = ({ player }) => {
             </div>
 
             {/* Form Strip */}
-            <div className="mt-6">
+            <div className="mt-6 shrink-0">
                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest block mb-2">Last 5 Matches</span>
                <div className="flex justify-between gap-2">
                  {player.form.map((r, i) => (
@@ -125,6 +141,18 @@ export const BroadcastDetail: React.FC<BroadcastDetailProps> = ({ player }) => {
                    </div>
                  ))}
                </div>
+            </div>
+
+            {/* Dynamic AI Analysis Section */}
+            <div className="mt-6 shrink-0 bg-brand-cyan/5 border border-brand-cyan/20 rounded-xl p-4 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-brand-cyan/10 blur-2xl rounded-full -mr-8 -mt-8 pointer-events-none"></div>
+              <div className="flex items-center gap-2 mb-3">
+                <BrainCircuit className="w-4 h-4 text-brand-cyan" />
+                <span className="text-[10px] text-brand-cyan font-bold uppercase tracking-widest">AI Scouting Report</span>
+              </div>
+              <p className="text-sm font-sans text-gray-300 leading-relaxed">
+                {getAIAnalysis(player)}
+              </p>
             </div>
 
           </div>

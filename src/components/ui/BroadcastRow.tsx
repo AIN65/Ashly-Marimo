@@ -11,10 +11,10 @@ interface BroadcastRowProps {
 
 export const BroadcastRow: React.FC<BroadcastRowProps> = ({ player, isActive, onClick, isBiggestMover }) => {
   const getPodiumColor = (rank: number) => {
-    if (rank === 1) return 'text-[#FFD700] drop-shadow-[0_0_10px_rgba(255,215,0,0.5)]'; // Gold
-    if (rank === 2) return 'text-[#C0C0C0] drop-shadow-[0_0_10px_rgba(192,192,192,0.5)]'; // Silver
-    if (rank === 3) return 'text-[#CD7F32] drop-shadow-[0_0_10px_rgba(205,127,50,0.5)]'; // Bronze
-    return 'text-white/10';
+    if (rank === 1) return 'text-[#FFD700] drop-shadow-[0_0_15px_rgba(255,215,0,0.8)] opacity-40'; // Gold
+    if (rank === 2) return 'text-[#C0C0C0] drop-shadow-[0_0_15px_rgba(192,192,192,0.8)] opacity-30'; // Silver
+    if (rank === 3) return 'text-[#CD7F32] drop-shadow-[0_0_15px_rgba(205,127,50,0.8)] opacity-30'; // Bronze
+    return 'text-white/10 opacity-20';
   };
 
   const getJerseyColor = (index: number) => {
@@ -36,7 +36,7 @@ export const BroadcastRow: React.FC<BroadcastRowProps> = ({ player, isActive, on
       `}
     >
       {/* Ghost Number */}
-      <div className={`absolute -right-4 -top-8 text-[120px] font-barlow-condensed font-black italic select-none pointer-events-none opacity-20 ${getPodiumColor(player.rank)}`}>
+      <div className={`absolute -right-4 -top-8 text-[120px] font-barlow-condensed font-black italic select-none pointer-events-none ${getPodiumColor(player.rank)}`}>
         {player.rank.toString().padStart(2, '0')}
       </div>
 
@@ -66,8 +66,8 @@ export const BroadcastRow: React.FC<BroadcastRowProps> = ({ player, isActive, on
           <div className="flex items-end gap-3 truncate">
             <h3 className="font-barlow font-black italic text-2xl tracking-tight text-white uppercase truncate drop-shadow-sm">{player.name}</h3>
             {isBiggestMover && (
-              <div className="mb-1.5 px-1.5 py-0.5 bg-brand-cyan/20 border border-brand-cyan/50 text-brand-cyan text-[10px] font-bold uppercase tracking-widest rounded flex items-center gap-0.5">
-                <ChevronUp className="w-3 h-3" strokeWidth={3} /> {Math.abs(player.change)}
+              <div className="mb-1.5 px-2 py-0.5 bg-brand-cyan/10 border border-brand-cyan/30 text-brand-cyan text-[10px] font-bold uppercase tracking-widest rounded shadow-[0_0_10px_rgba(0,255,133,0.2)] flex items-center justify-center">
+                +{Math.abs(player.change)}
               </div>
             )}
           </div>

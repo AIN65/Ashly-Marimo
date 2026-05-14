@@ -16,12 +16,17 @@ const FeaturedCard = ({ player }: { player: Player }) => {
         </div>
         
         {/* Profile Avatar */}
-        <div className="w-24 h-24 rounded-full border border-yellow-500/30 flex items-center justify-center mb-5 relative bg-[#0A0D14] text-yellow-500 text-3xl font-black font-display tracking-tight z-10 shadow-[0_0_30px_rgba(234,179,8,0.15)] group-hover:shadow-[0_0_40px_rgba(234,179,8,0.3)] transition-all">
-          <span className="bg-clip-text text-transparent bg-gradient-to-br from-yellow-200 to-yellow-600">
-            {player.name.substring(0,2)}
+        <div className="w-24 h-24 border border-yellow-500/30 flex flex-col items-center justify-center mb-5 relative bg-yellow-500 text-yellow-500 text-3xl font-black font-display tracking-tight z-10 shadow-[0_0_30px_rgba(234,179,8,0.15)] group-hover:shadow-[0_0_40px_rgba(234,179,8,0.3)] transition-all overflow-hidden" 
+             style={{ borderRadius: '0.5rem 0.5rem 1rem 1rem', borderBottom: '2px solid rgba(255, 255, 255, 0.2)' }}>
+          <div className="absolute inset-0 bg-[#0A0D14] m-[2px]" style={{ borderRadius: '0.4rem 0.4rem 0.9rem 0.9rem' }}></div>
+          <span className="bg-clip-text text-transparent bg-gradient-to-br from-yellow-200 to-yellow-600 z-10 font-barlow-condensed italic text-4xl">
+            {(player.name.length * 7 + player.rank * 3) % 99 + 1}
           </span>
-          <div className="absolute -inset-1.5 rounded-full border border-yellow-500/20 mix-blend-screen rotate-45 group-hover:rotate-90 transition-transform duration-700"></div>
-          <div className="absolute -inset-1.5 rounded-full border border-yellow-500/20 mix-blend-screen -rotate-45 group-hover:-rotate-90 transition-transform duration-700"></div>
+          <span className="text-[10px] font-bold text-yellow-500 mt-1 uppercase tracking-widest z-10">
+            {player.team.split(' ').map(w => w[0]).join('').substring(0,3).toUpperCase()}
+          </span>
+          <div className="absolute -inset-1.5 rounded-full border border-yellow-500/20 mix-blend-screen rotate-45 group-hover:rotate-90 transition-transform duration-700 pointer-events-none"></div>
+          <div className="absolute -inset-1.5 rounded-full border border-yellow-500/20 mix-blend-screen -rotate-45 group-hover:-rotate-90 transition-transform duration-700 pointer-events-none"></div>
         </div>
         
         <h3 className="text-2xl font-bold font-display tracking-tight mb-1 text-white">{player.name}</h3>
