@@ -13,15 +13,20 @@ service cloud.firestore {
     function isSignedIn() { return request.auth != null; }
     
     function isValidUser(data, authUid) {
-      return data.keys().hasAll(['userId', 'fullName', 'email', 'clubName', 'joinDate', 'rankingScore', 'position']) &&
-             data.keys().size() == 7 &&
+      return data.keys().hasAll(['userId', 'gamertag', 'email', 'joinDate', 'globalPoints', 'winRate', 'matchesPlayed', 'seed', 'form']) &&
              data.userId == authUid &&
-             data.fullName is string && data.fullName.size() > 0 && data.fullName.size() <= 64 &&
+             data.gamertag is string && data.gamertag.size() > 0 && data.gamertag.size() <= 64 &&
              data.email is string && data.email.size() > 0 && data.email.size() <= 128 &&
-             data.clubName is string && data.clubName.size() > 0 && data.clubName.size() <= 64 &&
              data.joinDate is number &&
-             (data.rankingScore == null || data.rankingScore is number) &&
-             (data.position == null || (data.position is string && data.position.size() <= 32));
+             data.globalPoints is int &&
+             data.winRate is number &&
+             data.matchesPlayed is int &&
+             data.seed is string && data.seed.size() <= 64 &&
+             data.form is list && data.form.size() <= 10 &&
+             (!('realName' in data.keys()) || data.realName == null || (data.realName is string && data.realName.size() <= 64)) &&
+             (!('clubName' in data.keys()) || data.clubName == null || (data.clubName is string && data.clubName.size() <= 64)) &&
+             (!('position' in data.keys()) || data.position == null || (data.position is string && data.position.size() <= 32)) &&
+             (!('region' in data.keys()) || data.region == null || (data.region is string && data.region.size() <= 64));
     }
     
     match /users/{userId} {
@@ -39,7 +44,8 @@ service cloud.firestore {
                     incoming().userId == existing().userId &&
                     incoming().joinDate == existing().joinDate &&
                     incoming().email == existing().email &&
-                    incoming().diff(existing()).affectedKeys().hasOnly(['fullName', 'clubName', 'rankingScore', 'position']);
+                    incoming().gamertag == existing().gamertag &&
+                    incoming().diff(existing()).affectedKeys().hasOnly(['realName', 'clubName', 'position', 'region']);
     }
   }
 }

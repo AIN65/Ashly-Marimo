@@ -32,10 +32,10 @@ async function startServer() {
 
   // API Route: Send Welcome Email
   app.post("/api/welcome", async (req, res) => {
-    const { email, fullName, clubName } = req.body;
+    const { email, gamertag } = req.body;
     
-    if (!email || !fullName) {
-      res.status(400).json({ status: "error", message: "Email and fullName required." });
+    if (!email || !gamertag) {
+      res.status(400).json({ status: "error", message: "Email and gamertag required." });
       return;
     }
 
@@ -46,17 +46,17 @@ async function startServer() {
 
     try {
       const info = await transporter.sendMail({
-        from: '"FC Rankings" <no-reply@fcrankings.app>',
+        from: '"Star Strick" <no-reply@starstrick.app>',
         to: email,
-        subject: "Welcome to FC Rankings, " + fullName + "!",
-        text: `Hi ${fullName},\n\nWelcome to FC Rankings! We're excited to have you represent ${clubName}.\n\nGet ready to jump into the competitive scene.\n\nBest,\nThe FC Rankings Team`,
-        html: `<div style="font-family: sans-serif; max-width: 600px; margin: auto;">
-                <h1 style="color: #00bcd4;">Welcome to FC Rankings, ${fullName}!</h1>
-                <p>We're thrilled to have you join the platform and represent <b>${clubName}</b>.</p>
-                <p>You can now log in, update your stats, and track your global placement.</p>
+        subject: "Welcome to the Star Strick Circuit, " + gamertag + "!",
+        text: `Hi ${gamertag},\n\nWelcome to the Star Strick Circuit. Your journey to the top of the global leaderboard begins now.\n\nBest,\nThe Star Strick Team`,
+        html: `<div style="font-family: sans-serif; max-width: 600px; margin: auto; background-color: #05050A; color: #fff; padding: 40px;">
+                <h1 style="color: #00bcd4;">Welcome to Star Strick!</h1>
+                <p>Hi <b>${gamertag}</b>,</p>
+                <p>Welcome to the Star Strick Circuit. Your journey to the top of the global leaderboard begins now.</p>
                 <br />
                 <p>Best regards,</p>
-                <p><b>The FC Rankings Team</b></p>
+                <p><b>The Star Strick Team</b></p>
                </div>`
       });
 

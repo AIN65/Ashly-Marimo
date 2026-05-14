@@ -13,10 +13,11 @@ export function AuthModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
   // Form fields
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
+  const [gamertag, setGamertag] = useState('');
+  const [realName, setRealName] = useState('');
   const [clubName, setClubName] = useState('');
-  const [rankingScore, setRankingScore] = useState('');
   const [position, setPosition] = useState('');
+  const [region, setRegion] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,11 +36,17 @@ export function AuthModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
         // Save to Firestore
         await setDoc(doc(db, 'users', user.uid), {
           userId: user.uid,
-          fullName,
+          gamertag,
           email,
-          clubName,
-          rankingScore: rankingScore ? Number(rankingScore) : null,
+          realName: realName ? realName : null,
+          clubName: clubName ? clubName : null,
           position: position ? position : null,
+          region: region ? region : null,
+          globalPoints: 0,
+          winRate: 0,
+          matchesPlayed: 0,
+          seed: 'Contender',
+          form: [],
           joinDate: Date.now()
         });
 
@@ -47,7 +54,7 @@ export function AuthModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
         fetch('/api/welcome', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, fullName, clubName })
+          body: JSON.stringify({ email, gamertag })
         }).catch(err => console.error("Email send trigger failed", err));
 
         onClose();
@@ -84,7 +91,7 @@ export function AuthModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
             </button>
 
             <h2 className="text-2xl font-bold mb-2 font-sans tracking-tight text-white">
-              {isLogin ? 'Welcome Back' : 'Join FC Rankings'}
+              {isLogin ? 'Welcome Back' : 'Join Star Strick'}
             </h2>
             <p className="text-sm text-gray-400 mb-6">
               {isLogin 
@@ -103,23 +110,26 @@ export function AuthModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
               {!isLogin && (
                 <>
                   <div className="space-y-1">
-                    <label className="text-[11px] uppercase tracking-widest text-cyan-500/80 font-bold ml-1">Full Name *</label>
+                    <label className="text-[11px] uppercase tracking-widest text-cyan-500/80 font-bold ml-1">Gamertag *</label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                       <input 
-                        type="text" required value={fullName} onChange={e => setFullName(e.target.value)}
+                        type="text" required value={gamertag} onChange={e => setGamertag(e.target.value)}
                         className="w-full bg-[#12141d]/80 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-cyan-500/50 transition-colors"
-                        placeholder="e.g. Tendai M."
+                        placeholder="e.g. WILFY-Z"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[11px] uppercase tracking-widest text-cyan-500/80 font-bold ml-1">Club/Team Name *</label>
+                    <label className="text-[11px] uppercase tracking-widest text-gray-500 font-bold ml-1 flex items-center justify-between">
+                      Club/Team Name 
+                      <span className="text-[9px] bg-white/10 px-1.5 py-0.5 rounded text-gray-400">Optional</span>
+                    </label>
                     <div className="relative">
                       <Shield className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                       <input 
-                        type="text" required value={clubName} onChange={e => setClubName(e.target.value)}
+                        type="text" value={clubName} onChange={e => setClubName(e.target.value)}
                         className="w-full bg-[#12141d]/80 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-cyan-500/50 transition-colors"
                         placeholder="e.g. Harare Thunder"
                       />
@@ -129,15 +139,15 @@ export function AuthModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
                       <label className="text-[11px] uppercase tracking-widest text-gray-500 font-bold ml-1 flex items-center justify-between">
-                        FC Skill Level 
+                        Region 
                         <span className="text-[9px] bg-white/10 px-1.5 py-0.5 rounded text-gray-400">Optional</span>
                       </label>
                       <div className="relative">
                         <Activity className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                         <input 
-                          type="number" min="0" max="10000" value={rankingScore} onChange={e => setRankingScore(e.target.value)}
+                          type="text" value={region} onChange={e => setRegion(e.target.value)}
                           className="w-full bg-[#12141d]/80 border border-white/10 rounded-xl py-3 pl-10 pr-3 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-cyan-500/50 transition-colors"
-                          placeholder="e.g. 1500"
+                          placeholder="e.g. Zimbabwe"
                         />
                       </div>
                     </div>

@@ -1,0 +1,257 @@
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Player, PLAYERS } from '../../data/players';
+import { BroadcastRow } from '../ui/BroadcastRow';
+import { BroadcastDetail } from '../ui/BroadcastDetail';
+import { FilterStrip } from '../ui/FilterStrip';
+import { Trophy, ChevronUp } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+
+export const BroadcastLeaderboard = () => {
+  const [activePlayerId, setActivePlayerId] = useState<string | null>(null);
+  const [players, setPlayers] = useState<Player[]>(PLAYERS);
+  const [isMobileDetailOpen, setIsMobileDetailOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [sortField, setSortField] = useState<'points' | 'winRate' | 'gd' | 'streak'>('points');
+  const [selectedDivision, setSelectedDivision] = useState<string | null>(null);
+
+  const listRef = useRef<HTMLDivElement>(null);
+  const rowRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  
+  // Initialize from URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const pid = params.get('p');
+    if (pid && PLAYERS.find(p => p.id === pid)) {
+      setActivePlayerId(pid);
+    }
+  }, []);
+
+  // Update URL
+  useEffect(() => {
+    if (activePlayerId) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('p', activePlayerId);
+      window.history.replaceState({}, '', url.toString());
+    }
+  }, [activePlayerId]);
+
+  // Apply filters & sort
+  useEffect(() => {
+    let filtered = [...PLAYERS];
+    
+    if (search) {
+      const s = search.toLowerCase();
+      filtered = filtered.filter(p => 
+        p.name.toLowerCase().includes(s) || 
+        p.team.toLowerCase().includes(s) ||
+        p.city.toLowerCase().includes(s)
+      );
+    }
+
+    if (selectedDivision) {
+      filtered = filtered.filter(p => p.tier.toLowerCase() === selectedDivision.toLowerCase());
+    }
+
+    filtered.sort((a, b) => {
+      if (sortField === 'points') return b.points - a.points;
+      if (sortField === 'winRate') return parseFloat(b.winRate) - parseFloat(a.winRate);
+      if (sortField === 'gd') return b.gd - a.gd;
+      if (sortField === 'streak') return b.streak - a.streak;
+      return 0;
+    });
+
+    setPlayers(filtered);
+    
+    if (!activePlayerId && filtered.length > 0) {
+      setActivePlayerId(filtered[0].id);
+    } else if (activePlayerId && !filtered.find(p => p.id === activePlayerId) && filtered.length > 0) {
+      setActivePlayerId(filtered[0].id);
+    }
+  }, [search, sortField, selectedDivision]); // activePlayerId intentionally omitted
+
+  // Scroll tracking
+  useEffect(() => {
+    let animationFrameId: number;
+    let isUserScrolling = false;
+
+    const handleScroll = () => {
+      if (window.innerWidth < 1024) return; // Only desktop
+      if (isMobileDetailOpen) return;
+      isUserScrolling = true;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    const trackScroll = () => {
+      if (isUserScrolling && window.innerWidth >= 1024) {
+        const viewportCenter = window.innerHeight / 2;
+        let closestId: string | null = null;
+        let smallestDistance = Infinity;
+
+        players.forEach(p => {
+          const el = rowRefs.current[p.id];
+          if (el) {
+            const rect = el.getBoundingClientRect();
+            const elementCenter = rect.top + rect.height / 2;
+            const distance = Math.abs(viewportCenter - elementCenter);
+            if (distance < smallestDistance) {
+              smallestDistance = distance;
+              closestId = p.id;
+            }
+          }
+        });
+
+        if (closestId && closestId !== activePlayerId) {
+          setActivePlayerId(closestId);
+        }
+        isUserScrolling = false;
+      }
+      animationFrameId = requestAnimationFrame(trackScroll);
+    };
+
+    trackScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [players, activePlayerId, isMobileDetailOpen]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        const currentIndex = players.findIndex(p => p.id === activePlayerId);
+        if (currentIndex === -1) return;
+        
+        let nextIndex = currentIndex;
+        if (e.key === 'ArrowDown' && currentIndex < players.length - 1) nextIndex++;
+        if (e.key === 'ArrowUp' && currentIndex > 0) nextIndex--;
+        
+        if (nextIndex !== currentIndex) {
+          const nextId = players[nextIndex].id;
+          setActivePlayerId(nextId);
+          rowRefs.current[nextId]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+      if (e.key === 'Enter' && window.innerWidth < 1024 && activePlayerId) {
+        setIsMobileDetailOpen(true);
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [players, activePlayerId]);
+
+  const activePlayer = players.find(p => p.id === activePlayerId) || players[0];
+
+  const handleRowClick = (id: string) => {
+    setActivePlayerId(id);
+    if (window.innerWidth < 1024) {
+      setIsMobileDetailOpen(true);
+    } else {
+      rowRefs.current[id]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
+  const biggestChangePlayerId = [...PLAYERS].reduce((prev, curr) => (curr.change > prev.change ? curr : prev)).id;
+
+  const groupedPlayers = {
+    Elite: players.filter(p => p.tier === 'Elite'),
+    Pro: players.filter(p => p.tier === 'Pro'),
+    Challenger: players.filter(p => p.tier === 'Challenger'),
+    Rookie: players.filter(p => p.tier === 'Rookie'),
+  };
+
+  return (
+    <section className="min-h-screen relative bg-[#050505] text-white pt-24 font-barlow pb-20">
+      <div className="absolute inset-x-0 top-0 h-96 bg-gradient-to-b from-[#1A1A1A]/80 to-transparent pointer-events-none"></div>
+      
+      <div className="max-w-[1600px] mx-auto px-4 md:px-8 relative z-10 w-full flex flex-col h-full">
+        <FilterStrip 
+          search={search} onSearch={setSearch}
+          sortField={sortField} onSortChange={setSortField}
+          selectedDivision={selectedDivision} onDivisionChange={setSelectedDivision}
+        />
+
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 mt-8 items-start relative min-h-[80vh]">
+          {/* Left Column: Rankings List */}
+          <div className="w-full lg:w-[65%] shrink-0 pb-32" ref={listRef}>
+            {(Object.keys(groupedPlayers) as Array<keyof typeof groupedPlayers>).map((tier) => (
+              groupedPlayers[tier].length > 0 && (
+                <div key={tier} className="mb-12">
+                  <div className="sticky top-20 lg:top-24 z-30 bg-[#050505]/90 backdrop-blur-xl py-4 border-b-4 border-brand-cyan mb-6 shadow-[0_4px_30px_rgba(0,0,0,0.8)]">
+                    <h2 className="text-3xl md:text-4xl font-black italic tracking-tighter text-white uppercase ml-2 select-none">
+                      {tier}
+                    </h2>
+                  </div>
+                  <div className="flex flex-col gap-3 relative z-10">
+                    <AnimatePresence mode="popLayout">
+                      {groupedPlayers[tier].map((player, index) => (
+                        <motion.div
+                          key={player.id}
+                          layout
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.9 }}
+                          transition={{ duration: 0.4, type: "spring", bounce: 0.2 }}
+                          ref={(el) => { if(el) rowRefs.current[player.id] = el; }} // Ensure HTMLDivElement is cast correctly, motion wrapper might forward it. 
+                        >
+                          <BroadcastRow 
+                            player={player} 
+                            isActive={activePlayerId === player.id}
+                            onClick={() => handleRowClick(player.id)}
+                            isBiggestMover={player.id === biggestChangePlayerId}
+                          />
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                  </div>
+                </div>
+              )
+            ))}
+          </div>
+
+          {/* Right Column: Sticky Detail (Desktop) */}
+          <div className="hidden lg:block w-[35%] shrink-0 sticky top-32 h-[calc(100vh-160px)]">
+            <BroadcastDetail player={activePlayer} />
+          </div>
+
+          {/* Bottom Sheet Detail (Mobile) */}
+          <AnimatePresence>
+            {isMobileDetailOpen && activePlayer && (
+              <>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setIsMobileDetailOpen(false)}
+                  className="fixed inset-0 bg-black/80 z-[100] lg:hidden backdrop-blur-sm"
+                />
+                <motion.div
+                  initial={{ y: "100%" }}
+                  animate={{ y: 0 }}
+                  exit={{ y: "100%" }}
+                  transition={{ type: "spring", bounce: 0, duration: 0.4 }}
+                  drag="y"
+                  dragConstraints={{ top: 0 }}
+                  onDragEnd={(e, { offset, velocity }) => {
+                    if (offset.y > 100 || velocity.y > 500) setIsMobileDetailOpen(false);
+                  }}
+                  className="fixed inset-x-0 bottom-0 h-[85vh] bg-[#0A0A0A] border-t border-white/10 z-[101] rounded-t-3xl overflow-hidden lg:hidden flex flex-col"
+                >
+                   <div className="w-12 h-1.5 bg-white/20 rounded-full mx-auto my-4 shrink-0"></div>
+                   <div className="flex-1 overflow-y-auto w-full relative">
+                      <BroadcastDetail player={activePlayer} />
+                   </div>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+
+        </div>
+      </div>
+    </section>
+  );
+};
