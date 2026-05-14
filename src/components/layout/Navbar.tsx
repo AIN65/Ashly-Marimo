@@ -74,7 +74,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user, userData, onLoginClick, on
         ) : (
           <button 
             onClick={onLoginClick}
-            className="text-xs font-black font-barlow tracking-widest px-5 py-2.5 rounded text-black bg-brand-cyan hover:bg-white hover:text-black transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(0,255,133,0.4)] hover:shadow-[0_0_25px_rgba(0,255,133,0.8)] uppercase animate-pulse"
+            className="text-[11px] font-black tracking-[0.1em] px-6 py-2.5 rounded-sm text-black bg-[#00FF85] hover:bg-white hover:scale-105 transition-all flex items-center gap-2 shadow-[0_0_20px_rgba(0,255,133,0.5)] hover:shadow-[0_0_30px_rgba(0,255,133,0.8)] border border-[#00FF85] uppercase"
           >
             Join Ranking
           </button>

@@ -132,7 +132,9 @@ export const BroadcastLeaderboard = () => {
         if (nextIndex !== currentIndex) {
           const nextId = players[nextIndex].id;
           setActivePlayerId(nextId);
-          rowRefs.current[nextId]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          if (window.innerWidth >= 1024) {
+            rowRefs.current[nextId]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
         }
       }
       if (e.key === 'Enter' && window.innerWidth < 1024 && activePlayerId) {
@@ -143,6 +145,18 @@ export const BroadcastLeaderboard = () => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [players, activePlayerId]);
+
+  // Body scroll lock
+  useEffect(() => {
+    if (isMobileDetailOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileDetailOpen]);
 
   const activePlayer = players.find(p => p.id === activePlayerId) || players[0];
 
@@ -246,19 +260,20 @@ export const BroadcastLeaderboard = () => {
                   initial={{ y: "100%" }}
                   animate={{ y: 0 }}
                   exit={{ y: "100%" }}
-                  transition={{ type: "spring", bounce: 0.1, duration: 0.4 }}
+                  transition={{ type: "spring", damping: 25, stiffness: 200, mass: 1 }}
                   drag="y"
                   dragConstraints={{ top: 0 }}
-                  dragElastic={0.2}
+                  dragElastic={0.05}
                   onDragEnd={(e, { offset, velocity }) => {
-                    if (offset.y > 100 || velocity.y > 400) setIsMobileDetailOpen(false);
+                    if (offset.y > 150 || velocity.y > 500) setIsMobileDetailOpen(false);
                   }}
-                  className="fixed inset-x-0 bottom-0 h-[96dvh] z-[101] lg:hidden flex flex-col p-2 pb-0"
+                  className="fixed inset-x-0 bottom-0 h-[100dvh] z-[101] lg:hidden flex flex-col"
                 >
-                   <div className="w-full flex justify-center py-4 cursor-grab active:cursor-grabbing shrink-0 z-50 absolute top-2 left-0 right-0">
+                   {/* Handle bar area with extra hit area for dragging */}
+                   <div className="w-full flex justify-center pt-3 pb-8 cursor-grab active:cursor-grabbing shrink-0 z-[110] absolute top-0 left-0 right-0">
                        <div className="w-12 h-1.5 bg-white/40 shadow-sm rounded-full"></div>
                    </div>
-                   <div className="flex-1 overflow-y-auto w-full relative overscroll-none pb-4 drop-shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+                   <div className="flex-1 w-full relative h-full pt-2">
                       <BroadcastDetail player={activePlayer} />
                    </div>
                 </motion.div>

@@ -14,6 +14,7 @@ import { FullRankings } from './pages/FullRankings';
 import { TournamentHub } from './pages/TournamentHub';
 import { ActivePros } from './pages/ActivePros';
 import { ProTeams } from './pages/ProTeams';
+import { TeamDetail } from './pages/TeamDetail';
 import { PrizePool } from './pages/PrizePool';
 import { MatchesPlayed } from './pages/MatchesPlayed';
 
@@ -61,6 +62,7 @@ export default function App() {
           <Route path="/hub" element={<TournamentHub />} />
           <Route path="/pros" element={<ActivePros />} />
           <Route path="/teams" element={<ProTeams />} />
+          <Route path="/teams/:teamId" element={<TeamDetail />} />
           <Route path="/prize" element={<PrizePool />} />
           <Route path="/matches" element={<MatchesPlayed />} />
         </Routes>
