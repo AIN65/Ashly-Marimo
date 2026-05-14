@@ -11,10 +11,10 @@ interface BroadcastRowProps {
 
 export const BroadcastRow: React.FC<BroadcastRowProps> = ({ player, isActive, onClick, isBiggestMover }) => {
   const getPodiumColor = (rank: number) => {
-    if (rank === 1) return 'text-[#FFD700] drop-shadow-[0_0_15px_rgba(255,215,0,0.8)] opacity-40'; // Gold
-    if (rank === 2) return 'text-[#C0C0C0] drop-shadow-[0_0_15px_rgba(192,192,192,0.8)] opacity-30'; // Silver
-    if (rank === 3) return 'text-[#CD7F32] drop-shadow-[0_0_15px_rgba(205,127,50,0.8)] opacity-30'; // Bronze
-    return 'text-white/10 opacity-20';
+    if (rank === 1) return 'text-yellow-400 drop-shadow-[0_0_20px_rgba(250,204,21,0.3)] opacity-40'; // Gold
+    if (rank === 2) return 'text-zinc-300 drop-shadow-[0_0_20px_rgba(212,212,216,0.3)] opacity-30'; // Silver
+    if (rank === 3) return 'text-amber-600 drop-shadow-[0_0_20px_rgba(217,119,6,0.3)] opacity-30'; // Bronze
+    return 'text-white/10 opacity-10';
   };
 
   const getJerseyColor = (index: number) => {
@@ -29,10 +29,10 @@ export const BroadcastRow: React.FC<BroadcastRowProps> = ({ player, isActive, on
   return (
     <div 
       onClick={onClick}
-      className={`relative w-full rounded-xl overflow-hidden cursor-pointer flex items-stretch select-none transition-all duration-500 ease-out border border-white/5
+      className={`relative w-full rounded-[1.5rem] overflow-hidden cursor-pointer flex items-stretch select-none transition-all duration-500 ease-out border border-white/10
         ${isActive 
-          ? 'bg-[#0A0A0A] scale-[1.02] md:scale-[1.05] z-20 shadow-[0_0_25px_2px_rgba(0,255,133,0.3)] border-l-4 border-l-brand-cyan' 
-          : 'bg-[#1A1A1A] hover:bg-[#222222] z-10 hover:border-l-4 hover:border-l-brand-cyan/50 hover:bg-gradient-to-r hover:from-brand-cyan/10 hover:to-transparent'}
+          ? 'bg-white/10 backdrop-blur-3xl scale-[1.02] md:scale-[1.05] z-20 shadow-[inset_0_2px_4px_rgba(255,255,255,0.1),inset_0_-2px_4px_rgba(0,0,0,0.5),0_10px_40px_rgba(0,0,0,0.5)] border-t-white/30 border-l-4 border-l-brand-cyan' 
+          : 'bg-[#050505]/40 backdrop-blur-2xl hover:bg-white/10 z-10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_8px_32px_rgba(0,0,0,0.4)] hover:shadow-[inset_0_2px_4px_rgba(255,255,255,0.1),0_12px_40px_rgba(0,0,0,0.5)] hover:border-l-4 hover:border-l-brand-cyan/50'}
       `}
     >
       {/* Ghost Number */}

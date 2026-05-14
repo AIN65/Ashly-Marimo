@@ -13,19 +13,34 @@ export const BroadcastDetail: React.FC<BroadcastDetailProps> = ({ player }) => {
   const jerseyNumber = (player.name.length * 7 + player.rank * 3) % 99 + 1;
 
   const getAIAnalysis = (p: Player) => {
-    if (p.streak >= 3) return `${p.name} is on fire with a ${p.streak}-game win streak. Opponents are struggling to break through their defensive structure and counter-attacks.`;
-    if (p.streak <= -2) return `${p.name} has hit a rough patch recently. Needs to re-evaluate their mid-field transition to turn things around and regain form.`;
-    if (parseFloat(p.winRate) > 80) return `Absolute dominance. ${p.name} maintains an elite ${p.winRate} win rate, executing high-percentage plays consistently in the final third.`;
-    if (p.gd > 20) return `Offensive powerhouse. A +${p.gd} goal difference highlights ${p.name}'s lethal finishing inside the box and aggressive high-press.`;
-    if (parseFloat(p.winRate) < 50) return `Looking for form. ${p.name} needs to tighten up defensively to improve their ${p.winRate} win rate and climb the ranks.`;
-    return `Steady performances from ${p.name}. Currently focusing on consistent point accumulation in the ${p.tier} division to push for promotion.`;
+    let analysis = "";
+    
+    // Streaks
+    if (p.streak >= 3) analysis += `${p.name} is on fire with a ${p.streak}-game win streak. `;
+    else if (p.streak <= -2) analysis += `${p.name} has hit a rough patch recently. `;
+    else analysis += `Steady recent performances. `;
+
+    // Stats
+    if (p.offense > 85 && p.defense < 75) analysis += `A brilliant offensive threat (${p.offense} rating), but their defense (${p.defense}) leaves them vulnerable to counter-attacks. `;
+    else if (p.defense > 85 && p.offense < 75) analysis += `A defensive brick wall (${p.defense} rating). They absorb pressure exceptionally well but struggle to convert chances. `;
+    else if (p.offense >= 85 && p.defense >= 85) analysis += `An elite, well-rounded tactical approach with exceptional dual-phase metrics (${p.offense} Off, ${p.defense} Def). `;
+    else analysis += `A balanced but developing setup. `;
+
+    // Possession
+    if (p.possession > 55) analysis += `They dominate the ball with ${p.possession}% possession, dictating the tempo aggressively. `;
+    else if (p.possession < 45) analysis += `They prefer a low-block, transitional game, only holding ${p.possession}% possession but remaining lethal on the break. `;
+
+    // Division Context
+    analysis += `Looking to make a statement in the ${p.tier} division.`;
+    
+    return analysis;
   };
 
   return (
-    <div className="w-full h-full relative overflow-hidden rounded-2xl bg-[#0A0A0A] border border-white/5 shadow-2xl flex flex-col">
+    <div className="w-full h-full relative overflow-hidden rounded-[2rem] bg-white/5 backdrop-blur-3xl border border-white/10 shadow-[inset_0_2px_4px_rgba(255,255,255,0.1),0_20px_60px_rgba(0,0,0,0.6)] flex flex-col items-stretch">
       <AnimatePresence mode="wait">
         <motion.div
-          key={player.id}
+            key={player.id}
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
@@ -73,55 +88,55 @@ export const BroadcastDetail: React.FC<BroadcastDetailProps> = ({ player }) => {
             </div>
 
             {/* Division Banner */}
-            <div className="w-full shrink-0 bg-white/5 border border-white/10 rounded-xl p-4 flex items-center justify-between backdrop-blur-sm mb-6">
+            <div className="w-full shrink-0 bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center justify-between backdrop-blur-md mb-6 shadow-[inset_0_2px_4px_rgba(255,255,255,0.1),0_8px_24px_rgba(0,0,0,0.4)]">
               <div className="flex items-center gap-3">
-                <Trophy className="w-6 h-6 text-yellow-500" />
+                <Trophy className="w-6 h-6 text-yellow-500 drop-shadow-md" />
                 <div className="flex flex-col">
                   <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Division</span>
-                  <span className="font-barlow font-bold italic uppercase tracking-wider text-white text-lg leading-tight">{player.tier}</span>
+                  <span className="font-barlow font-bold italic uppercase tracking-wider text-white text-lg leading-tight drop-shadow-sm">{player.tier}</span>
                 </div>
               </div>
               <div className="text-right">
                 <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest block">World Rank</span>
-                <span className="font-barlow-condensed font-black italic text-3xl text-white">{player.rank.toString().padStart(2, '0')}</span>
+                <span className="font-barlow-condensed font-black italic text-4xl text-white drop-shadow-md">{player.rank.toString().padStart(2, '0')}</span>
               </div>
             </div>
 
             {/* Stats Grid */}
             <div className="grid grid-cols-2 gap-4 shrink-0">
-              <div className="bg-[#111] border border-white/5 rounded-xl p-4 flex flex-col justify-between h-24 relative overflow-hidden group">
-                <div className="absolute top-0 left-0 w-1 h-full bg-brand-cyan"></div>
+              <div className="bg-white/5 backdrop-blur-md border border-white/10 shadow-[inset_0_1px_2px_rgba(255,255,255,0.05),0_8px_16px_rgba(0,0,0,0.3)] rounded-2xl p-4 flex flex-col justify-between h-24 relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-1 h-full bg-brand-cyan shadow-[0_0_10px_rgba(0,255,133,0.5)]"></div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Points</span>
+                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest drop-shadow-sm">Points</span>
                   <Target className="w-4 h-4 text-brand-cyan opacity-50" />
                 </div>
-                <span className="font-barlow-condensed font-black text-3xl text-white">{player.points.toLocaleString()}</span>
+                <span className="font-barlow-condensed font-black text-3xl text-white drop-shadow-md">{player.points.toLocaleString()}</span>
               </div>
 
-              <div className="bg-[#111] border border-white/5 rounded-xl p-4 flex flex-col justify-between h-24 relative overflow-hidden">
+              <div className="bg-white/5 backdrop-blur-md border border-white/10 shadow-[inset_0_1px_2px_rgba(255,255,255,0.05),0_8px_16px_rgba(0,0,0,0.3)] rounded-2xl p-4 flex flex-col justify-between h-24 relative overflow-hidden">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Win Rate</span>
-                  <Swords className="w-4 h-4 text-gray-500" />
+                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest drop-shadow-sm">Win Rate</span>
+                  <Swords className="w-4 h-4 text-gray-400" />
                 </div>
-                <span className="font-barlow-condensed font-black text-3xl text-white">{player.winRate}</span>
+                <span className="font-barlow-condensed font-black text-3xl text-white drop-shadow-md">{player.winRate}</span>
               </div>
 
-              <div className="bg-[#111] border border-white/5 rounded-xl p-4 flex flex-col justify-between h-24 relative overflow-hidden">
+              <div className="bg-white/5 backdrop-blur-md border border-white/10 shadow-[inset_0_1px_2px_rgba(255,255,255,0.05),0_8px_16px_rgba(0,0,0,0.3)] rounded-2xl p-4 flex flex-col justify-between h-24 relative overflow-hidden">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Streak</span>
-                  <Flame className={`w-4 h-4 ${player.streak > 2 ? 'text-orange-500' : 'text-gray-500'}`} />
+                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest drop-shadow-sm">Streak</span>
+                  <Flame className={`w-4 h-4 ${player.streak > 2 ? 'text-orange-500 drop-shadow-[0_0_5px_rgba(249,115,22,0.8)]' : 'text-gray-500'}`} />
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <span className="font-barlow-condensed font-black text-3xl text-white">{Math.abs(player.streak)}</span>
-                  <span className="text-xs font-bold text-gray-500 uppercase">{player.streak >= 0 ? 'W' : 'L'}</span>
+                  <span className="font-barlow-condensed font-black text-3xl text-white drop-shadow-md">{Math.abs(player.streak)}</span>
+                  <span className="text-xs font-bold text-gray-400 uppercase drop-shadow-sm">{player.streak >= 0 ? 'W' : 'L'}</span>
                 </div>
               </div>
 
-              <div className="bg-[#111] border border-white/5 rounded-xl p-4 flex flex-col justify-between h-24 relative overflow-hidden">
+              <div className="bg-white/5 backdrop-blur-md border border-white/10 shadow-[inset_0_1px_2px_rgba(255,255,255,0.05),0_8px_16px_rgba(0,0,0,0.3)] rounded-2xl p-4 flex flex-col justify-between h-24 relative overflow-hidden">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Goal Diff</span>
+                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest drop-shadow-sm">Goal Diff</span>
                 </div>
-                <span className={`font-barlow-condensed font-black text-3xl ${player.gd > 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                <span className={`font-barlow-condensed font-black text-3xl drop-shadow-md ${player.gd > 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                   {player.gd > 0 ? '+' : ''}{player.gd}
                 </span>
               </div>
@@ -141,6 +156,61 @@ export const BroadcastDetail: React.FC<BroadcastDetailProps> = ({ player }) => {
                    </div>
                  ))}
                </div>
+            </div>
+
+            {/* Player Attributes */}
+            <div className="mt-6 shrink-0">
+              <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest block mb-3">Technical Ratings</span>
+              
+              <div className="space-y-4">
+                {/* Offense */}
+                <div>
+                  <div className="flex justify-between text-xs font-bold uppercase tracking-wider mb-1.5">
+                    <span className="text-white">Offense</span>
+                    <span className="text-brand-cyan">{player.offense}</span>
+                  </div>
+                  <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      animate={{ width: `${player.offense}%` }}
+                      transition={{ duration: 1, ease: "easeOut" }}
+                      className="h-full bg-gradient-to-r from-brand-cyan/40 to-brand-cyan shadow-[0_0_10px_rgba(0,255,133,0.5)]" 
+                    />
+                  </div>
+                </div>
+
+                {/* Defense */}
+                <div>
+                  <div className="flex justify-between text-xs font-bold uppercase tracking-wider mb-1.5">
+                    <span className="text-white">Defense</span>
+                    <span className="text-brand-cyan">{player.defense}</span>
+                  </div>
+                  <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      animate={{ width: `${player.defense}%` }}
+                      transition={{ duration: 1, delay: 0.1, ease: "easeOut" }}
+                      className="h-full bg-gradient-to-r from-brand-cyan/40 to-brand-cyan shadow-[0_0_10px_rgba(0,255,133,0.5)]" 
+                    />
+                  </div>
+                </div>
+
+                {/* Possession */}
+                <div>
+                  <div className="flex justify-between text-xs font-bold uppercase tracking-wider mb-1.5">
+                    <span className="text-white">Avg Possession</span>
+                    <span className="text-brand-cyan">{player.possession}%</span>
+                  </div>
+                  <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      animate={{ width: `${player.possession}%` }}
+                      transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+                      className="h-full bg-gradient-to-r from-brand-cyan/40 to-brand-cyan shadow-[0_0_10px_rgba(0,255,133,0.5)]" 
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Dynamic AI Analysis Section */}
