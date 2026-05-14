@@ -172,7 +172,7 @@ export const BroadcastLeaderboard = () => {
           {/* Left Column: Rankings List */}
           <div className="w-full lg:w-[65%] shrink-0 pb-32" ref={listRef}>
             <div className="flex flex-col gap-3 relative z-10">
-              <AnimatePresence mode="popLayout">
+              <AnimatePresence>
                 {players.flatMap((player, index) => {
                   const showTierHeader = sortField === 'points' && (!selectedDivision) && (index === 0 || players[index - 1].tier !== player.tier);
                   const items = [];
@@ -181,12 +181,12 @@ export const BroadcastLeaderboard = () => {
                     items.push(
                       <motion.div
                         layout
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
+                        initial={{ opacity: 0, y: -20, height: 0, marginTop: 0, marginBottom: 0 }}
+                        animate={{ opacity: 1, y: 0, height: 'auto', marginTop: 24, marginBottom: 8 }}
+                        exit={{ opacity: 0, scale: 0.95, height: 0, marginTop: 0, marginBottom: 0 }}
                         transition={{ duration: 0.4 }}
                         key={`header-${player.tier}`}
-                        className="sticky top-20 lg:top-24 z-30 bg-[#050505]/90 backdrop-blur-xl py-4 border-b-2 border-brand-cyan mb-2 mt-6 shadow-[0_4px_15px_rgba(0,255,133,0.15)] first:mt-0 transition-colors duration-500"
+                        className="sticky top-20 lg:top-24 z-30 bg-[#050505]/90 backdrop-blur-xl py-4 border-b-2 border-brand-cyan shadow-[0_4px_15px_rgba(0,255,133,0.15)] first:mt-0 transition-colors duration-500 overflow-hidden"
                       >
                         <h2 className="text-3xl md:text-4xl font-black italic tracking-tighter text-white uppercase ml-2 select-none">
                           {player.tier}
@@ -201,7 +201,7 @@ export const BroadcastLeaderboard = () => {
                       layout
                       initial={{ opacity: 0, y: 30, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+                      exit={{ opacity: 0, scale: 0.9, height: 0, marginTop: -12, transition: { duration: 0.2 } }}
                       transition={{ 
                         layout: { type: "spring", damping: 30, stiffness: 100, mass: 1 },
                         opacity: { duration: 0.4 },
@@ -253,12 +253,12 @@ export const BroadcastLeaderboard = () => {
                   onDragEnd={(e, { offset, velocity }) => {
                     if (offset.y > 100 || velocity.y > 400) setIsMobileDetailOpen(false);
                   }}
-                  className="fixed inset-x-0 bottom-0 h-[96dvh] bg-[#0A0A0A] border-t border-white/10 z-[101] rounded-t-3xl overflow-hidden lg:hidden flex flex-col shadow-[0_-10px_40px_rgba(0,0,0,0.5)]"
+                  className="fixed inset-x-0 bottom-0 h-[96dvh] z-[101] lg:hidden flex flex-col p-2 pb-0"
                 >
-                   <div className="w-full flex justify-center py-4 cursor-grab active:cursor-grabbing shrink-0 z-50 bg-[#0A0A0A]">
-                       <div className="w-12 h-1.5 bg-white/20 rounded-full"></div>
+                   <div className="w-full flex justify-center py-4 cursor-grab active:cursor-grabbing shrink-0 z-50 absolute top-2 left-0 right-0">
+                       <div className="w-12 h-1.5 bg-white/40 shadow-sm rounded-full"></div>
                    </div>
-                   <div className="flex-1 overflow-y-auto w-full relative overscroll-none pb-8">
+                   <div className="flex-1 overflow-y-auto w-full relative overscroll-none pb-4 drop-shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
                       <BroadcastDetail player={activePlayer} />
                    </div>
                 </motion.div>

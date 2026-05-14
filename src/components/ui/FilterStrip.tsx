@@ -19,12 +19,12 @@ export const FilterStrip: React.FC<FilterStripProps> = ({ search, onSearch, sort
     { id: 'streak', label: 'STREAK' }
   ];
 
-  const glassClasses = "bg-white/5 backdrop-blur-3xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_8px_32px_rgba(0,0,0,0.4)]";
-  const glassActiveClasses = "bg-brand-cyan/20 backdrop-blur-3xl border-t-brand-cyan/40 border-b-black/50 border-x-brand-cyan/20 shadow-[inset_0_2px_4px_rgba(0,255,133,0.3),inset_0_-2px_4px_rgba(0,0,0,0.5),0_4px_16px_rgba(0,255,133,0.2)] text-brand-cyan drop-shadow-md";
-  const glassHoverClasses = "hover:bg-white/10 hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-300";
+  const glassClasses = "bg-white/10 backdrop-blur-[30px] border border-white/20 shadow-[inset_0_2px_5px_rgba(255,255,255,0.2),inset_0_-2px_5px_rgba(0,0,0,0.5),0_8px_32px_rgba(0,0,0,0.5)]";
+  const glassActiveClasses = "bg-brand-cyan/30 backdrop-blur-[40px] border-t-white/40 border-b-black/50 border-x-brand-cyan/30 shadow-[inset_0_2px_6px_rgba(255,255,255,0.4),inset_0_-2px_4px_rgba(0,0,0,0.5),0_10px_20px_rgba(0,255,133,0.3)] text-brand-cyan drop-shadow-md";
+  const glassHoverClasses = "hover:bg-white/20 hover:shadow-[inset_0_2px_8px_rgba(255,255,255,0.3),0_12px_40px_rgba(0,0,0,0.6)] transition-all duration-300";
 
   return (
-    <div className="sticky top-0 z-40 bg-[#050505]/40 backdrop-blur-2xl py-4 border-b border-white/10 -mx-4 px-4 md:mx-0 md:px-0 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+    <div className="sticky top-0 z-40 bg-[#050505]/30 backdrop-blur-[40px] py-4 border-b border-white/20 -mx-4 px-4 md:mx-0 md:px-0 shadow-[inset_0_-1px_1px_rgba(255,255,255,0.1),0_10px_40px_rgba(0,0,0,0.6)]">
       <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
         
         {/* Predictive Search */}

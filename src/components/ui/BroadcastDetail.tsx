@@ -37,8 +37,8 @@ export const BroadcastDetail: React.FC<BroadcastDetailProps> = ({ player }) => {
   };
 
   return (
-    <div className="w-full h-full relative overflow-hidden rounded-[2rem] bg-white/5 backdrop-blur-3xl border border-white/10 shadow-[inset_0_2px_4px_rgba(255,255,255,0.1),0_20px_60px_rgba(0,0,0,0.6)] flex flex-col items-stretch">
-      <AnimatePresence mode="wait">
+    <div className="w-full h-full relative overflow-hidden rounded-[2rem] bg-white/10 backdrop-blur-[40px] border border-white/20 shadow-[inset_0_2px_10px_rgba(255,255,255,0.3),0_30px_80px_rgba(0,0,0,0.8)] flex flex-col items-stretch before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/20 before:via-transparent before:to-black/50 before:rounded-[2rem] before:pointer-events-none">
+      <AnimatePresence>
         <motion.div
             key={player.id}
           initial={{ opacity: 0, x: 20 }}
@@ -88,55 +88,60 @@ export const BroadcastDetail: React.FC<BroadcastDetailProps> = ({ player }) => {
             </div>
 
             {/* Division Banner */}
-            <div className="w-full shrink-0 bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center justify-between backdrop-blur-md mb-6 shadow-[inset_0_2px_4px_rgba(255,255,255,0.1),0_8px_24px_rgba(0,0,0,0.4)]">
-              <div className="flex items-center gap-3">
-                <Trophy className="w-6 h-6 text-yellow-500 drop-shadow-md" />
+            <div className="w-full shrink-0 bg-white/10 border border-white/20 rounded-[1.5rem] p-5 flex items-center justify-between backdrop-blur-[40px] mb-6 shadow-[inset_0_2px_5px_rgba(255,255,255,0.3),0_10px_30px_rgba(0,0,0,0.6)] relative overflow-hidden">
+              <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/10 to-transparent pointer-events-none mix-blend-overlay"></div>
+              <div className="flex items-center gap-4 relative z-10">
+                <Trophy className="w-8 h-8 text-yellow-500 drop-shadow-[0_0_15px_rgba(234,179,8,0.5)]" />
                 <div className="flex flex-col">
-                  <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Division</span>
-                  <span className="font-barlow font-bold italic uppercase tracking-wider text-white text-lg leading-tight drop-shadow-sm">{player.tier}</span>
+                  <span className="text-[10px] text-white/60 font-bold uppercase tracking-wider drop-shadow-sm">Division</span>
+                  <span className="font-barlow font-black italic uppercase tracking-widest text-white text-xl leading-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] mt-0.5">{player.tier}</span>
                 </div>
               </div>
-              <div className="text-right">
-                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest block">World Rank</span>
-                <span className="font-barlow-condensed font-black italic text-4xl text-white drop-shadow-md">{player.rank.toString().padStart(2, '0')}</span>
+              <div className="text-right relative z-10 bg-white/5 px-4 py-2 rounded-xl border border-white/10 shadow-inner">
+                <span className="text-[10px] text-brand-cyan font-bold uppercase tracking-widest block drop-shadow-sm">World Rank</span>
+                <span className="font-barlow-condensed font-black italic text-4xl text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] -mt-1 block">{player.rank.toString().padStart(2, '0')}</span>
               </div>
             </div>
 
             {/* Stats Grid */}
             <div className="grid grid-cols-2 gap-4 shrink-0">
-              <div className="bg-white/5 backdrop-blur-md border border-white/10 shadow-[inset_0_1px_2px_rgba(255,255,255,0.05),0_8px_16px_rgba(0,0,0,0.3)] rounded-2xl p-4 flex flex-col justify-between h-24 relative overflow-hidden group">
-                <div className="absolute top-0 left-0 w-1 h-full bg-brand-cyan shadow-[0_0_10px_rgba(0,255,133,0.5)]"></div>
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest drop-shadow-sm">Points</span>
-                  <Target className="w-4 h-4 text-brand-cyan opacity-50" />
+              <div className="bg-white/10 backdrop-blur-[30px] border border-white/20 shadow-[inset_0_2px_5px_rgba(255,255,255,0.2),0_10px_20px_rgba(0,0,0,0.4)] rounded-2xl p-4 flex flex-col justify-between h-24 relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/30 pointer-events-none mix-blend-overlay"></div>
+                <div className="absolute top-0 left-0 w-1 h-full bg-brand-cyan shadow-[0_0_10px_rgba(0,255,133,0.8)]"></div>
+                <div className="flex items-center justify-between relative z-10">
+                  <span className="text-[10px] text-white/70 font-bold uppercase tracking-widest drop-shadow-sm">Points</span>
+                  <Target className="w-4 h-4 text-brand-cyan drop-shadow-sm" />
                 </div>
-                <span className="font-barlow-condensed font-black text-3xl text-white drop-shadow-md">{player.points.toLocaleString()}</span>
+                <span className="font-barlow-condensed font-black text-3xl text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] relative z-10">{player.points.toLocaleString()}</span>
               </div>
 
-              <div className="bg-white/5 backdrop-blur-md border border-white/10 shadow-[inset_0_1px_2px_rgba(255,255,255,0.05),0_8px_16px_rgba(0,0,0,0.3)] rounded-2xl p-4 flex flex-col justify-between h-24 relative overflow-hidden">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest drop-shadow-sm">Win Rate</span>
-                  <Swords className="w-4 h-4 text-gray-400" />
+              <div className="bg-white/10 backdrop-blur-[30px] border border-white/20 shadow-[inset_0_2px_5px_rgba(255,255,255,0.2),0_10px_20px_rgba(0,0,0,0.4)] rounded-2xl p-4 flex flex-col justify-between h-24 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/30 pointer-events-none mix-blend-overlay"></div>
+                <div className="flex items-center justify-between relative z-10">
+                  <span className="text-[10px] text-white/70 font-bold uppercase tracking-widest drop-shadow-sm">Win Rate</span>
+                  <Swords className="w-4 h-4 text-white/50" />
                 </div>
-                <span className="font-barlow-condensed font-black text-3xl text-white drop-shadow-md">{player.winRate}</span>
+                <span className="font-barlow-condensed font-black text-3xl text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] relative z-10">{player.winRate}</span>
               </div>
 
-              <div className="bg-white/5 backdrop-blur-md border border-white/10 shadow-[inset_0_1px_2px_rgba(255,255,255,0.05),0_8px_16px_rgba(0,0,0,0.3)] rounded-2xl p-4 flex flex-col justify-between h-24 relative overflow-hidden">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest drop-shadow-sm">Streak</span>
-                  <Flame className={`w-4 h-4 ${player.streak > 2 ? 'text-orange-500 drop-shadow-[0_0_5px_rgba(249,115,22,0.8)]' : 'text-gray-500'}`} />
+              <div className="bg-white/10 backdrop-blur-[30px] border border-white/20 shadow-[inset_0_2px_5px_rgba(255,255,255,0.2),0_10px_20px_rgba(0,0,0,0.4)] rounded-2xl p-4 flex flex-col justify-between h-24 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/30 pointer-events-none mix-blend-overlay"></div>
+                <div className="flex items-center justify-between relative z-10">
+                  <span className="text-[10px] text-white/70 font-bold uppercase tracking-widest drop-shadow-sm">Streak</span>
+                  <Flame className={`w-4 h-4 ${player.streak > 2 ? 'text-orange-400 drop-shadow-[0_0_8px_rgba(249,115,22,1)]' : 'text-white/50'}`} />
                 </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="font-barlow-condensed font-black text-3xl text-white drop-shadow-md">{Math.abs(player.streak)}</span>
-                  <span className="text-xs font-bold text-gray-400 uppercase drop-shadow-sm">{player.streak >= 0 ? 'W' : 'L'}</span>
+                <div className="flex items-baseline gap-2 relative z-10">
+                  <span className="font-barlow-condensed font-black text-3xl text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{Math.abs(player.streak)}</span>
+                  <span className="text-xs font-bold text-white/70 uppercase drop-shadow-sm">{player.streak >= 0 ? 'W' : 'L'}</span>
                 </div>
               </div>
 
-              <div className="bg-white/5 backdrop-blur-md border border-white/10 shadow-[inset_0_1px_2px_rgba(255,255,255,0.05),0_8px_16px_rgba(0,0,0,0.3)] rounded-2xl p-4 flex flex-col justify-between h-24 relative overflow-hidden">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest drop-shadow-sm">Goal Diff</span>
+              <div className="bg-white/10 backdrop-blur-[30px] border border-white/20 shadow-[inset_0_2px_5px_rgba(255,255,255,0.2),0_10px_20px_rgba(0,0,0,0.4)] rounded-2xl p-4 flex flex-col justify-between h-24 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/30 pointer-events-none mix-blend-overlay"></div>
+                <div className="flex items-center justify-between relative z-10">
+                  <span className="text-[10px] text-white/70 font-bold uppercase tracking-widest drop-shadow-sm">Goal Diff</span>
                 </div>
-                <span className={`font-barlow-condensed font-black text-3xl drop-shadow-md ${player.gd > 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                <span className={`font-barlow-condensed font-black text-3xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] relative z-10 ${player.gd > 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                   {player.gd > 0 ? '+' : ''}{player.gd}
                 </span>
               </div>

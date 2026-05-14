@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { ArrowRight, ChevronDown, Gamepad2, Trophy, Users, Shield } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export const HeroSection = () => {
   return (
@@ -50,15 +51,15 @@ export const HeroSection = () => {
         transition={{ duration: 0.7, delay: 0.3, ease: "easeOut" }}
         className="flex flex-col sm:flex-row w-full max-w-md gap-4 mb-16 px-4 sm:px-0"
       >
-        <button className="flex-1 relative group overflow-hidden rounded-xl bg-white text-black font-bold font-sans text-[15px] py-4 transition-all hover:scale-[1.02]">
+        <Link to="/rankings" className="flex-1 relative group overflow-hidden rounded-xl bg-white text-black font-bold font-sans text-[15px] py-4 transition-all hover:scale-[1.02] flex items-center justify-center">
           <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity"></div>
           <span className="relative flex items-center justify-center gap-2 group-hover:text-white">
             Full Rankings <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
           </span>
-        </button>
-        <button className="flex-1 py-4 rounded-xl border border-white/10 bg-white/5 backdrop-blur-md font-bold text-[15px] hover:bg-white/10 transition-all font-sans text-white hover:scale-[1.02]">
+        </Link>
+        <Link to="/hub" className="flex-1 py-4 rounded-xl border border-white/10 bg-white/5 backdrop-blur-md font-bold text-[15px] hover:bg-white/10 transition-all font-sans text-white hover:scale-[1.02] flex items-center justify-center">
           Tournament Hub
-        </button>
+        </Link>
       </motion.div>
 
       {/* Cinematic Stats Overview */}
@@ -69,17 +70,17 @@ export const HeroSection = () => {
         className="grid grid-cols-2 md:grid-cols-4 w-full max-w-4xl gap-4 md:gap-6 px-4"
       >
         {[
-          { label: 'Active Pros', value: '25+', icon: Users, color: 'text-cyan-400' },
-          { label: 'Pro Teams', value: '6', icon: Shield, color: 'text-purple-400' },
-          { label: 'Prize Pool', value: '$50K', icon: Trophy, color: 'text-yellow-400' },
-          { label: 'Matches Played', value: '5K+', icon: Gamepad2, color: 'text-emerald-400' }
+          { label: 'Active Pros', value: '25+', icon: Users, color: 'text-cyan-400', path: '/pros' },
+          { label: 'Pro Teams', value: '6', icon: Shield, color: 'text-purple-400', path: '/teams' },
+          { label: 'Prize Pool', value: '$50K', icon: Trophy, color: 'text-yellow-400', path: '/prize' },
+          { label: 'Matches Played', value: '5K+', icon: Gamepad2, color: 'text-emerald-400', path: '/matches' }
         ].map((stat, i) => (
-          <div key={i} className="flex flex-col items-center justify-center py-8 rounded-2xl glass-panel relative overflow-hidden group">
+          <Link to={stat.path} key={i} className="flex flex-col items-center justify-center py-8 rounded-2xl glass-panel relative overflow-hidden group hover:scale-[1.02] transition-transform">
             <div className={`absolute top-0 w-full h-[2px] bg-gradient-to-r from-transparent via-${stat.color.split('-')[1]}-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity`}></div>
             <stat.icon className={`w-6 h-6 mb-3 ${stat.color} opacity-80`} strokeWidth={1.5} />
             <div className="text-3xl font-display font-black tracking-tight text-white">{stat.value}</div>
-            <div className="text-[11px] uppercase tracking-[0.15em] text-gray-500 font-bold mt-1">{stat.label}</div>
-          </div>
+            <div className="text-[11px] uppercase tracking-[0.15em] text-gray-500 font-bold mt-1 group-hover:text-white transition-colors">{stat.label}</div>
+          </Link>
         ))}
       </motion.div>
 

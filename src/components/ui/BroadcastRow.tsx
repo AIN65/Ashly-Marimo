@@ -11,9 +11,9 @@ interface BroadcastRowProps {
 
 export const BroadcastRow: React.FC<BroadcastRowProps> = ({ player, isActive, onClick, isBiggestMover }) => {
   const getPodiumColor = (rank: number) => {
-    if (rank === 1) return 'text-yellow-400 drop-shadow-[0_0_20px_rgba(250,204,21,0.3)] opacity-40'; // Gold
-    if (rank === 2) return 'text-zinc-300 drop-shadow-[0_0_20px_rgba(212,212,216,0.3)] opacity-30'; // Silver
-    if (rank === 3) return 'text-amber-600 drop-shadow-[0_0_20px_rgba(217,119,6,0.3)] opacity-30'; // Bronze
+    if (rank === 1) return 'text-[#FFD700] [text-shadow:0_0_25px_rgba(255,215,0,0.6)] opacity-40'; // Gold
+    if (rank === 2) return 'text-[#E0E0E0] [text-shadow:0_0_25px_rgba(224,224,224,0.5)] opacity-30'; // Silver
+    if (rank === 3) return 'text-[#CD7F32] [text-shadow:0_0_25px_rgba(205,127,50,0.5)] opacity-30'; // Bronze
     return 'text-white/10 opacity-10';
   };
 
@@ -31,15 +31,19 @@ export const BroadcastRow: React.FC<BroadcastRowProps> = ({ player, isActive, on
       onClick={onClick}
       className={`relative w-full rounded-[1.5rem] overflow-hidden cursor-pointer flex items-stretch select-none transition-all duration-500 ease-out border border-white/10
         ${isActive 
-          ? 'bg-white/10 backdrop-blur-3xl scale-[1.02] md:scale-[1.05] z-20 shadow-[inset_0_2px_4px_rgba(255,255,255,0.1),inset_0_-2px_4px_rgba(0,0,0,0.5),0_10px_40px_rgba(0,0,0,0.5)] border-t-white/30 border-l-4 border-l-brand-cyan' 
-          : 'bg-[#050505]/40 backdrop-blur-2xl hover:bg-white/10 z-10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_8px_32px_rgba(0,0,0,0.4)] hover:shadow-[inset_0_2px_4px_rgba(255,255,255,0.1),0_12px_40px_rgba(0,0,0,0.5)] hover:border-l-4 hover:border-l-brand-cyan/50'}
+          ? 'bg-white/10 backdrop-blur-[40px] scale-[1.02] md:scale-[1.05] z-20 shadow-[inset_0_2px_4px_rgba(255,255,255,0.2),inset_0_-2px_6px_rgba(0,0,0,0.5),0_15px_40px_rgba(0,0,0,0.6)] border-t-white/30 border-l-4 border-l-brand-cyan before:absolute before:inset-0 before:bg-gradient-to-tr before:from-brand-cyan/20 before:via-transparent before:to-white/10 before:rounded-[1.5rem] before:pointer-events-none' 
+          : 'bg-[#050505]/40 backdrop-blur-[30px] hover:bg-white/10 z-10 shadow-[inset_0_1px_2px_rgba(255,255,255,0.08),0_8px_32px_rgba(0,0,0,0.5)] hover:shadow-[inset_0_2px_5px_rgba(255,255,255,0.2),0_12px_40px_rgba(0,0,0,0.6)] hover:border-l-4 hover:border-l-brand-cyan/70'}
       `}
     >
       {/* Ghost Number */}
-      <div className={`absolute -right-4 -top-8 text-[120px] font-barlow-condensed font-black italic select-none pointer-events-none ${getPodiumColor(player.rank)}`}>
-        {player.rank.toString().padStart(2, '0')}
+      <div className="absolute -right-4 -top-8 text-[120px] font-barlow-condensed font-black italic select-none pointer-events-none transform-gpu translate-z-0">
+        <span className={getPodiumColor(player.rank)}>{player.rank.toString().padStart(2, '0')}</span>
       </div>
 
+      {/* Liquid reflection sheen */}
+      <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/5 to-transparent mix-blend-overlay pointer-events-none"></div>
+      {isActive && <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-brand-cyan/5 via-transparent to-brand-cyan/10 mix-blend-screen opacity-50 transition-opacity duration-500"></div>}
+      
       <div className="flex-1 flex items-center p-4 py-5 gap-4 relative z-10">
         
         {/* Rank & Change */}
