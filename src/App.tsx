@@ -1,5 +1,9 @@
-import React, { useState } from 'react';
-import { Search, Menu, Filter, ArrowDown, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, Menu, Filter, ArrowDown, ArrowRight, User as UserIcon, LogOut } from 'lucide-react';
+import { AuthModal } from './components/AuthModal';
+import { auth, db } from './firebase';
+import { onAuthStateChanged, signOut, User } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 
 const PLAYERS = [
   { rank: 1, change: 0, name: 'WILFY-Z', team: 'Harare Thunder', tier: 'Elite', points: 3120, winRate: '90.3%', form: ['W','W','W','D','W'] },
@@ -21,14 +25,41 @@ const PLAYERS = [
 ];
 
 export default function App() {
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [userData, setUserData] = useState<any>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        // Fetch user data
+        const docRef = doc(db, 'users', currentUser.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setUserData(docSnap.data());
+        }
+      } else {
+        setUserData(null);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleSignOut = () => {
+    signOut(auth);
+  };
+
   return (
     <div className="min-h-screen bg-[#060811] text-white font-sans selection:bg-cyan-500/30 overflow-x-hidden">
       {/* Background Ambience */}
       <div className="fixed top-20 left-1/2 -translate-x-1/2 w-[300px] h-[300px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen"></div>
       <div className="fixed top-40 right-[-100px] w-[200px] h-[200px] bg-purple-500/10 rounded-full blur-[80px] pointer-events-none mix-blend-screen"></div>
 
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+
       {/* Navbar */}
-      <nav className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-6 py-4 bg-[#060811]/90 backdrop-blur-md">
+      <nav className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-6 py-4 bg-[#060811]/90 backdrop-blur-md border-b border-white/[0.03]">
         <div className="flex items-center gap-2">
           <div className="relative w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center font-bold tracking-tighter text-sm">
             ZW
@@ -36,12 +67,32 @@ export default function App() {
           </div>
         </div>
         <div className="flex items-center gap-4">
+          {user ? (
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-medium text-gray-300 hidden sm:block">
+                {userData?.fullName || user.email}
+              </span>
+              <button onClick={handleSignOut} className="text-gray-400 hover:text-white transition-colors" title="Sign Out">
+                 <LogOut className="w-5 h-5" strokeWidth={1.5} />
+              </button>
+            </div>
+          ) : (
+            <button 
+              onClick={() => setIsAuthModalOpen(true)}
+              className="text-sm font-semibold tracking-wide flex items-center gap-2 text-cyan-400 hover:text-cyan-300 transition-colors"
+            >
+              <UserIcon className="w-4 h-4" strokeWidth={2} />
+              Login / Register
+            </button>
+          )}
+
+          <div className="w-px h-5 bg-white/10 mx-1"></div>
+          
           <button className="text-gray-400 hover:text-white transition-colors">
             <Search className="w-6 h-6" strokeWidth={1.5} />
           </button>
           <button className="text-gray-400 hover:text-white transition-colors relative">
             <Menu className="w-6 h-6" strokeWidth={1.5} />
-            {/* 3 lines for hamburger inside rounded wrapper as per design */}
             <div className="absolute inset-0 rounded-full border border-white/10 scale-125 pointer-events-none"></div>
           </button>
         </div>
@@ -221,15 +272,15 @@ export default function App() {
   );
 }
 
-function PlayerRow({ player }) {
-  const getRankCol = (rank) => {
+const PlayerRow: React.FC<{ player: any }> = ({ player }) => {
+  const getRankCol = (rank: number) => {
     if (rank === 1) return 'bg-yellow-500 text-black h-[28px] w-[28px] text-[13px] shadow-[0_0_12px_rgba(234,179,8,0.4)]';
     if (rank === 2) return 'bg-slate-300 text-black h-7 w-7 text-[12px] shadow-[0_0_12px_rgba(203,213,225,0.3)]';
     if (rank === 3) return 'bg-orange-500 text-black h-7 w-7 text-[12px] shadow-[0_0_12px_rgba(249,115,22,0.3)]';
     return 'bg-white/5 text-white h-7 w-7 text-[11px] border border-white/10';
   };
 
-  const getTierBadge = (tier) => {
+  const getTierBadge = (tier: string) => {
     if (tier === 'Elite') return 'text-yellow-500 border-yellow-500/40';
     if (tier === 'Pro') return 'text-cyan-400 border-cyan-400/40';
     return 'text-purple-400 border-purple-400/40';

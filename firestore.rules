@@ -1,0 +1,45 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+    
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isSignedIn() { return request.auth != null; }
+    
+    function isValidUser(data, authUid) {
+      return data.keys().hasAll(['userId', 'fullName', 'email', 'clubName', 'joinDate', 'rankingScore', 'position']) &&
+             data.keys().size() == 7 &&
+             data.userId == authUid &&
+             data.fullName is string && data.fullName.size() > 0 && data.fullName.size() <= 64 &&
+             data.email is string && data.email.size() > 0 && data.email.size() <= 128 &&
+             data.clubName is string && data.clubName.size() > 0 && data.clubName.size() <= 64 &&
+             data.joinDate is number &&
+             (data.rankingScore == null || data.rankingScore is number) &&
+             (data.position == null || (data.position is string && data.position.size() <= 32));
+    }
+    
+    match /users/{userId} {
+      allow get, list: if isSignedIn(); // Allow registered users to see others
+      
+      allow create: if isSignedIn() &&
+                    isValidId(userId) &&
+                    userId == request.auth.uid &&
+                    isValidUser(incoming(), request.auth.uid);
+                    
+      allow update: if isSignedIn() &&
+                    isValidId(userId) &&
+                    userId == request.auth.uid &&
+                    isValidUser(incoming(), request.auth.uid) &&
+                    incoming().userId == existing().userId &&
+                    incoming().joinDate == existing().joinDate &&
+                    incoming().email == existing().email &&
+                    incoming().diff(existing()).affectedKeys().hasOnly(['fullName', 'clubName', 'rankingScore', 'position']);
+    }
+  }
+}

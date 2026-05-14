@@ -1,0 +1,25 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A registered player in the FC Rankings system.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "fullName": { "type": "string" },
+        "email": { "type": "string" },
+        "clubName": { "type": "string" },
+        "rankingScore": { "type": "number" },
+        "position": { "type": "string" },
+        "joinDate": { "type": "number", "description": "Timestamp" }
+      },
+      "required": ["userId", "fullName", "email", "clubName", "joinDate"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user profiles."
+    }
+  }
+}
